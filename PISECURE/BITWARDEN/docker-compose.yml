@@ -15,8 +15,8 @@ services:
     image: nginx:1.15-alpine
     restart: always
     environment:
-        PUID: 0
-        PGID: 0
+        PUID: 1000
+        PGID: 1000
     ports:
       - "82:80"
       - "8443:443"
@@ -39,5 +39,5 @@ services:
       - BACKUP_FILE=/backup/backup.sqlite3
       - CRON_TIME=0 1 * * *
       - TIMESTAMP=false
-      - UID=0
-      - GID=0
+      - UID=1000
+      - GID=1000
