@@ -1,0 +1,16 @@
+# TOMADO DE PELADO NERD https://github.com/pablokbs/peladonerd/tree/master/varios/6
+
+
+#AGREGAR EL DOMINIO
+docker-compose run --rm openvpn ovpn_genconfig -u udp://domain.com
+docker-compose run --rm openvpn ovpn_initpki
+
+
+#AGREGAR CLIENTES
+export CLIENTNAME="el_nombre_del_cliente"
+docker-compose run --rm openvpn easyrsa build-client-full $CLIENTNAME
+
+docker-compose run --rm openvpn easyrsa build-client-full $CLIENTNAME 
+
+#SACAR CLIENTE DOCKER Y PONERLO EN MAQUINA LOCAL
+docker-compose run --rm openvpn ovpn_getclient $CLIENTNAME > $CLIENTNAME.ovpn

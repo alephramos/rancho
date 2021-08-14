@@ -1,0 +1,102 @@
+version: "2.1"
+services:
+  bazarr:
+    image: linuxserver/bazarr:version-v0.9.0.7
+    container_name: bazarr
+    restart: unless-stopped
+    environment:
+      - TZ=America/Mexico_city
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /PATH_SERIES/:/SERIES
+      - /PATH_MOVIES/:/MOVIES
+      - /PATH_CONFIG_PIFLIX/BAZARR/config/:/config
+    ports:
+      - 6767:6767 
+  jackett:
+    image: ghcr.io/linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Mexico_city
+      - AUTO_UPDATE=true
+    volumes:
+      - /PATH_CONFIG_PIFLIX/JACKETT/config/:/config
+      - /PATH_CONFIG_PIFLIX/JACKETT/downloads/:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+  plex: 
+    image: ghcr.io/linuxserver/plex:bionic-1.22.3.4392-d7c624def-ls28
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+      - TZ=America/Mexico_city
+      - privileged=true
+      - UMASK=022
+    volumes:
+      - /PATH_CONFIG_PIFLIX/PLEX/config/:/config
+      - /PATH_SERIES/:/tv
+      - /PATH_MOVIES/:/movies
+      - /PATH_MUSIC/12:/music
+    restart: unless-stopped
+  lidarr:
+    image: ghcr.io/linuxserver/lidarr
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Mexico_city
+    volumes:
+      - /PATH_CONFIG_PIFLIX/LIDARR/config/:/config
+      - /PATH_MUSIC/12:/music
+      - /PATH_CONFIG_PIFLIX/TRANS/downloads/:/downloads
+    ports:
+      - 8686:8686
+    restart: unless-stopped    
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Mexico_city
+    volumes:
+      - /PATH_CONFIG_PIFLIX/SONARR/config/:/config
+      - /PATH_SERIES/:/tv
+      - /PATH_CONFIG_PIFLIX/TRANS/downloads/:/downloads
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Mexico_city
+    volumes:
+      - /PATH_CONFIG_PIFLIX/RADARR/config/:/config
+      - /PATH_MOVIES/:/movies
+      - /PATH_CONFIG_PIFLIX/TRANS/downloads/:/downloads
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+  heimdall:
+    image: ghcr.io/linuxserver/heimdall
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Mexico_city
+    volumes:
+      - /PATH_CONFIG_PIFLIX/HEIM/config/:/config
+    ports:
+      - 81:80
+      - 443:443
+    restart: unless-stopped    

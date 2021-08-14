@@ -1,0 +1,43 @@
+version: '3'
+services:
+  bitwarden:
+    image: vaultwarden/server:latest
+    ports:
+        - "83:80"
+        - "3012:3012"
+    volumes:
+      - /PATH_CONFIG_SECURE/BITWARDEN/data:/data
+    restart: on-failure
+    environment:
+      WEBSOCKET_ENABLED: 'true'
+      ADMIN_TOKEN: 'TOKEN_ADMIN'
+  nginx:
+    image: nginx:1.15-alpine
+    restart: always
+    environment:
+        PUID: 0
+        PGID: 0
+    ports:
+      - "82:80"
+      - "8443:443"
+    volumes:
+      - /PATH_CONFIG_SECURE/BITWARDEN/nginx/:/etc/nginx
+      - /PATH_CONFIG_SECURE/BITWARDEN/ssl/:/etc/ssl
+  bw_backup:
+    image: bruceforce/bw_backup:rpi3 
+    container_name: bw_backup
+    restart: on-failure
+    depends_on:
+      - bitwarden
+    volumes:
+      - /PATH_CONFIG_SECURE/BITWARDEN/data:/data
+      - /PATH_BACKUP/BITWARDEN:/backup
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - DB_FILE=/data/db.sqlite3
+      - BACKUP_FILE=/backup/backup.sqlite3
+      - CRON_TIME=0 1 * * *
+      - TIMESTAMP=false
+      - UID=0
+      - GID=0
